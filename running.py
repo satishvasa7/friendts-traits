@@ -55,6 +55,7 @@ def get_traits(friend_name):
 
 if __name__ == "__main__":
     print("🌟 Starting Friends Traits Dashboard Server...")
-    print("🌐 Open your browser and go to: http://127.0.0.1:80")
-    print("💡 All friends are arranged in a circle!")
-    app.run(debug=True, host='127.0.0.1', port=80)
+    print("🌐 Open your browser and go to: http://0.0.0.0:80")
+    print("💡 For EC2: Use your public IP - http://<YOUR_PUBLIC_IP>:80")
+    print("📝 Make sure port 80 is open in your EC2 security group!")
+    app.run(debug=False, host='0.0.0.0', port=80)
