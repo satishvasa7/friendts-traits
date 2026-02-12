@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Friends Traits Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="dashboard">
+        <header class="page-header">
+            <h1>🌟 Friends Traits Dashboard 🌟</h1>
+            <p class="subtitle">Click on any name to view traits and emoji</p>
+        </header>
+
+        <!-- Three Column Layout -->
+        <div class="layout-container">
+            <!-- Left Column -->
+            <div class="column left-column">
+                {% for friend in friends[0:2] %}
+                <button class="friend-button" onclick="showTraits('{{ friend }}')">
+                    <span class="friend-button-text">{{ friend.upper() }}</span>
+                </button>
+                {% endfor %}
+            </div>
+
+            <!-- Middle Column -->
+            <div class="column middle-column">
+                {% for friend in friends[2:4] %}
+                <button class="friend-button" onclick="showTraits('{{ friend }}')">
+                    <span class="friend-button-text">{{ friend.upper() }}</span>
+                </button>
+                {% endfor %}
+            </div>
+
+            <!-- Right Column -->
+            <div class="column right-column">
+                {% for friend in friends[4:6] %}
+                <button class="friend-button" onclick="showTraits('{{ friend }}')">
+                    <span class="friend-button-text">{{ friend.upper() }}</span>
+                </button>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for displaying traits and emoji -->
+    <div id="traitsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            
+            <div class="modal-emoji-container">
+                <div id="friendEmoji" class="friend-emoji">😊</div>
+            </div>
+            
+            <div class="modal-header">
+                <h2 id="friendName"></h2>
+            </div>
+            
+            <div class="modal-body">
+                <h3>Traits</h3>
+                <ul id="traitsList"></ul>
+            </div>
+            
+            <div class="modal-footer">
+                <button onclick="closeModal()" class="close-btn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTraits(friendName) {
+            // Fetch traits from API
+            fetch(`/api/traits/${friendName}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update modal header
+                        document.getElementById('friendName').textContent = `${data.name.toUpperCase()}'s Profile`;
+                        
+                        // Update emoji
+                        document.getElementById('friendEmoji').textContent = data.emoji;
+                        
+                        // Update traits list
+                        const traitsList = document.getElementById('traitsList');
+                        traitsList.innerHTML = '';
+                        
+                        data.traits.forEach(trait => {
+                            const li = document.createElement('li');
+                            li.textContent = trait;
+                            traitsList.appendChild(li);
+                        });
+                        
+                        // Show modal
+                        document.getElementById('traitsModal').style.display = 'block';
+                    } else {
+                        alert('Friend not found!');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error loading traits');
+                });
+        }
+
+        function closeModal() {
+            document.getElementById('traitsModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById('traitsModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
